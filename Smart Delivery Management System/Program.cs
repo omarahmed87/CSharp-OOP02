@@ -83,6 +83,30 @@ and Genre.Science by casting each to int.
 result.
  */
 
+//using System;
+
+//public enum Genre
+//{
+//    Fiction,
+//    NonFiction,
+//    Science
+//}
+
+//public class Program
+//{
+//    public static void Main()
+//    {
+//        string genreText = "Science";
+//        Genre parsedGenre = (Genre)Enum.Parse(typeof(Genre), genreText);
+//        Console.WriteLine(parsedGenre);
+//    }
+//}
+#endregion
+#region Q5 from assignment Basics05
+/*
+ Given string genreText = "Mystery"; (not a valid Genre value), use Enum.TryParse() to attempt the 
+conversion. Print "Unknown genre" if it fails.
+ */
 using System;
 
 public enum Genre
@@ -96,9 +120,15 @@ public class Program
 {
     public static void Main()
     {
-        string genreText = "Science";
-        Genre parsedGenre = (Genre)Enum.Parse(typeof(Genre), genreText);
-        Console.WriteLine(parsedGenre);
+        string genreText = "Mystery";
+        if (Enum.TryParse(genreText, out Genre result))
+        {
+            Console.WriteLine(result);
+        }
+        else
+        {
+            Console.WriteLine("Unknown genre");
+        }
     }
 }
 #endregion
