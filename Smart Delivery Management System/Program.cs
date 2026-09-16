@@ -58,6 +58,31 @@ and Genre.Science by casting each to int.
 /*
  Given int genreNumber = 1;, cast it into a Genre value and print the result.
  */
+//using System;
+
+//public enum Genre
+//{
+//    Fiction,
+//    NonFiction,
+//    Science
+//}
+
+//public class Program
+//{
+//    public static void Main()
+//    {
+//        int genreNumber = 1;
+//        Genre genre = (Genre)genreNumber;
+//        Console.WriteLine(genre);
+//    }
+//}
+#endregion
+#region Q4 from assignment Basics05
+/*
+ Given string genreText = "Science";, convert it into a Genre value using Enum.Parse() and print the 
+result.
+ */
+
 using System;
 
 public enum Genre
@@ -71,9 +96,9 @@ public class Program
 {
     public static void Main()
     {
-        int genreNumber = 1;
-        Genre genre = (Genre)genreNumber;
-        Console.WriteLine(genre);
+        string genreText = "Science";
+        Genre parsedGenre = (Genre)Enum.Parse(typeof(Genre), genreText);
+        Console.WriteLine(parsedGenre);
     }
 }
 #endregion
