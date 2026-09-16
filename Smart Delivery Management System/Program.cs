@@ -1,27 +1,27 @@
 ﻿
 
-#region practical Q1
+#region practical Q2
 /*
- * a)  What happens when a DeliveryAddress variable is copied into another variable 
-  and the copy is modified? 
-b)  What happens when a Customer variable is copied into another variable and one variable modifies 
-the object
-public struct DeliveryAddress
+a) a) Identify at least three problems with this design from an encapsulation perspective. 
+b) b) How can private fields and public properties improve this design? 
+
+ public struct Shipment
 {
-public string City;
-public string Street;
+public string description;
+public double weight;
+public decimal DeliveryFee;
 }
-public class Customer
-{
-public string Name;
 }*/
 #endregion
-/*response
-a) DeliveryAddress is a struct (Value Type). When it is copied, a completely independent,
-new copy of the data is allocated on the Stack.
-Result: Modifying the copy will NOT affect the original variable.
---------------------------------------------------------------
-b) Customer is a class (Reference Type): When it is copied, only the memory reference is copied, while the actual object 
-remains in the Heap. Both variables now point to the exact same object in memory.
-Result: Modifying the object through either variable WILL affect both variables.
-*/
+/* response
+ a) Three problems with this design:
+   1.No Data Hiding: Fields are public, meaning anyone can change them directly without control.
+   2.No Validation: There is no check to prevent bad data (like negative weight or negative delivery fee).
+   3.Mutable Struct: Leaving struct fields public makes it mutable, which can lead to bugs when copied.
+
+ b)How private fields and public properties improve it:
+   1.Data Validation: Properties let us use logic (get/set) to reject invalid values (e.g., weight <= 0).
+   2.Read-Only Protection: We can make properties read-only ({ get; }) so values can't be changed by mistake after creation.
+   3.Control: Keeps the internal data safe and follows OOP encapsulation rules.
+ 
+ */
