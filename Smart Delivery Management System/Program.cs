@@ -31,6 +31,33 @@
 and Genre.Science by casting each to int.
  */
 
+//using System;
+
+//public enum Genre
+//{
+//    Fiction,
+//    NonFiction,
+//    Science
+//}
+
+//public class Program
+//{
+//    public static void Main()
+//    {
+//        int fictionVal = (int)Genre.Fiction;
+//        int nonFictionVal = (int)Genre.NonFiction;
+//        int scienceVal = (int)Genre.Science;
+
+//        Console.WriteLine(fictionVal);
+//        Console.WriteLine(nonFictionVal);
+//        Console.WriteLine(scienceVal);
+//    }
+//}
+#endregion
+#region Q3 from assignment Basics05
+/*
+ Given int genreNumber = 1;, cast it into a Genre value and print the result.
+ */
 using System;
 
 public enum Genre
@@ -44,13 +71,9 @@ public class Program
 {
     public static void Main()
     {
-        int fictionVal = (int)Genre.Fiction;
-        int nonFictionVal = (int)Genre.NonFiction;
-        int scienceVal = (int)Genre.Science;
-
-        Console.WriteLine(fictionVal);
-        Console.WriteLine(nonFictionVal);
-        Console.WriteLine(scienceVal);
+        int genreNumber = 1;
+        Genre genre = (Genre)genreNumber;
+        Console.WriteLine(genre);
     }
 }
 #endregion
