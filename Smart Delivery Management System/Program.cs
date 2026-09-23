@@ -2,14 +2,18 @@
 
 public class Program
 {
-    static void ReadInput(string prompt, out string value)
+    #region ReadInput function
+static void ReadInput(string prompt, out string value)
     {
         Console.Write(prompt);
         value = Console.ReadLine()!;
     }
+    #endregion
+    
 
     public static void Main()
     {
+        #region assignment 01
         DeliveryCenter center = new DeliveryCenter();
 
         // 1. read and add 3 shipments[cite: 1]
@@ -83,41 +87,48 @@ public class Program
         Console.WriteLine($"Original Address:{originalAddress.GetFullAddress()}");
         Console.WriteLine($"Copied Address:{copiedAddress.GetFullAddress()}");
     }
+        #endregion
+
 }
 
-// DeliveryAddress struct
+#region DeliveryAddress Struct
 public struct DeliveryAddress
 {
-    // fields
+    #region Fields
     public string City;
     public string Street;
     public int BuildingNumber;
+    #endregion
 
-    // constructor
+    #region Constructors
     public DeliveryAddress(string city, string street, int buildingNumber)
     {
         City = city;
         Street = street;
         BuildingNumber = buildingNumber;
     }
+    #endregion
 
-    // get full address string
+    #region Methods
     public string GetFullAddress()
     {
-        return $"{BuildingNumber}{Street},{City}";
+        return $"{BuildingNumber} {Street}, {City}";
     }
+    #endregion
 }
+#endregion
 
-// Shipment struct
+#region Shipment Struct
 public struct Shipment
 {
-    // private fields
+    #region Private Fields
     private string trackingCode;
     private string description;
     private double weight;
     private decimal deliveryFee;
+    #endregion
 
-    // properties with validation
+    #region Properties
     public string TrackingCode
     {
         get { return trackingCode; }
@@ -155,13 +166,13 @@ public struct Shipment
 
     public DeliveryAddress Destination { get; set; }
 
-    // calculated cost property
     public decimal EstimatedCost
     {
         get { return DeliveryFee + ((decimal)Weight * 5); }
     }
+    #endregion
 
-    // constructor with default values[cite: 1]
+    #region Constructors
     public Shipment(string trackingCode)
     {
         this.trackingCode = string.IsNullOrWhiteSpace(trackingCode) ? "UNKNOWN" : trackingCode;
@@ -171,7 +182,6 @@ public struct Shipment
         this.Destination = default;
     }
 
-    // full constructor
     public Shipment(string trackingCode, string description, double weight, decimal deliveryFee, DeliveryAddress destination)
     {
         this.trackingCode = string.IsNullOrWhiteSpace(trackingCode) ? "UNKNOWN" : trackingCode;
@@ -180,33 +190,73 @@ public struct Shipment
         this.deliveryFee = deliveryFee > 0 ? deliveryFee : 50;
         this.Destination = destination;
     }
+    #endregion
 
-    // update fee method
+    #region Methods
     public void UpdateDeliveryFee(decimal newFee)
     {
         if (newFee > 0)
             deliveryFee = newFee;
     }
 
-    // print method
     public void PrintShipment()
     {
-        Console.WriteLine($"Tracking Code:{TrackingCode}");
-        Console.WriteLine($"Description:{Description}");
-        Console.WriteLine($"Weight:{Weight} KG");
-        Console.WriteLine($"Delivery Fee:{DeliveryFee} EGP");
-        Console.WriteLine($"Destination:{Destination.GetFullAddress()}");
-        Console.WriteLine($"Estimated Cost:{EstimatedCost} EGP");
+        Console.WriteLine($"Tracking Code: {TrackingCode}");
+        Console.WriteLine($"Description: {Description}");
+        Console.WriteLine($"Weight: {Weight} KG");
+        Console.WriteLine($"Delivery Fee: {DeliveryFee} EGP");
+        Console.WriteLine($"Destination: {Destination.GetFullAddress()}");
+        Console.WriteLine($"Estimated Cost: {EstimatedCost} EGP");
     }
+    #endregion
 }
+#endregion
 
-// DeliveryCenter struct
+#region DeliveryCenter Struct
 public struct DeliveryCenter
 {
+    #region Private Fields
     private Shipment[] shipments;
     private int count;
+    #endregion
 
-    // add shipment to array
+    #region Indexers
+    // int indexer: access by position
+    public Shipment this[int index]
+    {
+        get
+        {
+            if (shipments != null && index >= 0 && index < count)
+                return shipments[index];
+
+            return default;
+        }
+        set
+        {
+            if (shipments != null && index >= 0 && index < count)
+                shipments[index] = value;
+        }
+    }
+
+    // string indexer: find by tracking code
+    public Shipment this[string searchCode]
+    {
+        get
+        {
+            if (shipments != null && !string.IsNullOrWhiteSpace(searchCode))
+            {
+                for (int i = 0; i < count; i++)
+                {
+                    if (shipments[i].TrackingCode == searchCode)
+                        return shipments[i];
+                }
+            }
+            return default;
+        }
+    }
+    #endregion
+
+    #region Methods
     public bool AddShipment(Shipment shipment)
     {
         if (shipments == null)
@@ -224,38 +274,7 @@ public struct DeliveryCenter
 
         return false;
     }
+    #endregion
 
-    // int indexer: access by position[cite: 1]
-    public Shipment this[int index]
-    {
-        get
-        {
-            if (shipments != null && index >= 0 && index < count)
-                return shipments[index];
-
-            return default;
-        }
-        set
-        {
-            if (shipments != null && index >= 0 && index < count)
-                shipments[index] = value;
-        }
-    }
-
-    // string indexer: find by tracking code[cite: 1]
-    public Shipment this[string searchCode]
-    {
-        get
-        {
-            if (shipments != null && !string.IsNullOrWhiteSpace(searchCode))
-            {
-                for (int i = 0; i < count; i++)
-                {
-                    if (shipments[i].TrackingCode == searchCode)
-                        return shipments[i];
-                }
-            }
-            return default;
-        }
-    }
+#endregion
 }
