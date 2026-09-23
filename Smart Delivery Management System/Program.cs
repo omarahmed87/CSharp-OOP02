@@ -29,8 +29,34 @@ Struct:
 b) Why are classes more suitable than structs for large applications?
 1. Classes support OOP concepts like Inheritance, which makes the code reusable and easy to scale.
 2. Classes pass references instead of copying the whole object, which gives better performance when dealing with large data.
-*/ 
+*/
     #endregion
+    #region Theoretical Q2
+    /*
+    Consider the following code:
+    public class Shipment
+    {
+        public string TrackingCode { get; set; }
+    }
+    public class ExpressShipment : Shipment
+    {
+        public decimal ExtraFee { get; set; }
+    }
+
+    a) Which class is the parent class?
+      :Shipment
+    b) Which class is the child class?
+      :ExpressShipment
+    c) What members are inherited by ExpressShipment?
+      :TrackingCode
+    d) Why is inheritance better than duplicating the same code in multiple classes?
+       1. Code Reusability: Write shared code once instead of repeating it.
+       2. Easy Maintenance: Fix bugs or make updates in one place only.
+     */
+
+
+    #endregion
+
 
 
     public static void Main()
@@ -140,13 +166,13 @@ public struct DeliveryAddress
 }
 #endregion
 
-#region Shipment Struct
-public struct Shipment
+#region Shipment Class
+public class Shipment
 {
     #region Private Fields
     private string trackingCode;
     private string description;
-    private double weight;
+    private decimal weight;
     private decimal deliveryFee;
     #endregion
 
@@ -166,7 +192,7 @@ public struct Shipment
         }
     }
 
-    public double Weight
+    public decimal Weight
     {
         get { return weight; }
         set
@@ -188,9 +214,10 @@ public struct Shipment
 
     public DeliveryAddress Destination { get; set; }
 
-    public decimal EstimatedCost
+    // virtual to allow child classes to override calculation
+    public virtual decimal EstimatedCost
     {
-        get { return DeliveryFee + ((decimal)Weight * 5); }
+        get { return DeliveryFee + (Weight * 5); }
     }
     #endregion
 
@@ -204,7 +231,7 @@ public struct Shipment
         this.Destination = default;
     }
 
-    public Shipment(string trackingCode, string description, double weight, decimal deliveryFee, DeliveryAddress destination)
+    public Shipment(string trackingCode, string description, decimal weight, decimal deliveryFee, DeliveryAddress destination)
     {
         this.trackingCode = string.IsNullOrWhiteSpace(trackingCode) ? "UNKNOWN" : trackingCode;
         this.description = !string.IsNullOrWhiteSpace(description) ? description : "Unknown";
@@ -221,13 +248,12 @@ public struct Shipment
             deliveryFee = newFee;
     }
 
-    public void PrintShipment()
+    public virtual void PrintShipment()
     {
-        Console.WriteLine($"Tracking Code: {TrackingCode}");
-        Console.WriteLine($"Description: {Description}");
-        Console.WriteLine($"Weight: {Weight} KG");
-        Console.WriteLine($"Delivery Fee: {DeliveryFee} EGP");
-        Console.WriteLine($"Destination: {Destination.GetFullAddress()}");
+        Console.WriteLine($"Tracking Code : {TrackingCode}");
+        Console.WriteLine($"Description   : {Description}");
+        Console.WriteLine($"Weight        : {Weight} KG");
+        Console.WriteLine($"Delivery Fee  : {DeliveryFee} EGP");
         Console.WriteLine($"Estimated Cost: {EstimatedCost} EGP");
     }
     #endregion
