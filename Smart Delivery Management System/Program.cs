@@ -355,12 +355,22 @@ public class InternationalShipment : Shipment
 
 #endregion
 
-#region DeliveryCenter Struct
-public struct DeliveryCenter
+#region DeliveryCenter Class
+public class DeliveryCenter
 {
-    #region Private Fields
+    #region Properties & Fields
+    public string CenterName { get; set; }
     private Shipment[] shipments;
     private int count;
+    #endregion
+
+    #region Constructors
+    public DeliveryCenter(string centerName = "Main Center")
+    {
+        CenterName = centerName;
+        shipments = new Shipment[20];
+        count = 0;
+    }
     #endregion
 
     #region Indexers
@@ -372,7 +382,7 @@ public struct DeliveryCenter
             if (shipments != null && index >= 0 && index < count)
                 return shipments[index];
 
-            return default;
+            return null;
         }
         set
         {
@@ -394,7 +404,7 @@ public struct DeliveryCenter
                         return shipments[i];
                 }
             }
-            return default;
+            return null;
         }
     }
     #endregion
@@ -402,11 +412,8 @@ public struct DeliveryCenter
     #region Methods
     public bool AddShipment(Shipment shipment)
     {
-        if (shipments == null)
-        {
-            shipments = new Shipment[10];
-            count = 0;
-        }
+        if (shipment == null)
+            return false;
 
         if (count < shipments.Length)
         {
@@ -417,7 +424,55 @@ public struct DeliveryCenter
 
         return false;
     }
-    #endregion
 
-#endregion
+    public bool RemoveShipment(string trackingCode)
+    {
+        if (string.IsNullOrWhiteSpace(trackingCode) || count == 0)
+            return false;
+
+        int foundIndex = -1;
+        for (int i = 0; i < count; i++)
+        {
+            if (shipments[i].TrackingCode == trackingCode)
+            {
+                foundIndex = i;
+                break;
+            }
+        }
+
+        if (foundIndex == -1)
+            return false;
+
+        // Shift elements to the left to remove item
+        for (int i = foundIndex; i < count - 1; i++)
+        {
+            shipments[i] = shipments[i + 1];
+        }
+
+        shipments[count - 1] = null;
+        count--;
+        return true;
+    }
+
+    public void PrintAllShipments()
+    {
+        Console.WriteLine("==================================================");
+        Console.WriteLine($"Delivery Center : {CenterName}");
+        Console.WriteLine("==================================================");
+
+        for (int i = 0; i < count; i++)
+        {
+            if (shipments[i] is StandardShipment)
+                Console.WriteLine("Standard Shipment\n");
+            else if (shipments[i] is ExpressShipment)
+                Console.WriteLine("Express Shipment\n");
+            else if (shipments[i] is InternationalShipment)
+                Console.WriteLine("International Shipment\n");
+
+            shipments[i].PrintShipment();
+            Console.WriteLine("--------------------------------------------------");
+        }
+    }
+    #endregion
 }
+#endregion
