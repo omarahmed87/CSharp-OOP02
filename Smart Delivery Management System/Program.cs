@@ -260,6 +260,101 @@ public class Shipment
 }
 #endregion
 
+#region Shipment Types (Inheritance)
+
+#region StandardShipment Class
+public class StandardShipment : Shipment
+{
+    public StandardShipment(string trackingCode, string description, decimal weight, decimal deliveryFee, DeliveryAddress destination)
+        : base(trackingCode, description, weight, deliveryFee, destination)
+    {
+    }
+}
+#endregion
+
+#region ExpressShipment Class
+public class ExpressShipment : Shipment
+{
+    private decimal extraFee;
+
+    public decimal ExtraFee
+    {
+        get { return extraFee; }
+        set
+        {
+            if (value >= 0)
+                extraFee = value;
+        }
+    }
+
+    public override decimal EstimatedCost
+    {
+        get { return base.EstimatedCost + ExtraFee; }
+    }
+
+    public ExpressShipment(string trackingCode, string description, decimal weight, decimal deliveryFee, DeliveryAddress destination, decimal extraFee)
+        : base(trackingCode, description, weight, deliveryFee, destination)
+    {
+        ExtraFee = extraFee;
+    }
+
+    public override void PrintShipment()
+    {
+        base.PrintShipment();
+        Console.WriteLine($"Extra Fee     : {ExtraFee} EGP");
+    }
+}
+#endregion
+
+#region InternationalShipment Class
+public class InternationalShipment : Shipment
+{
+    private string destinationCountry;
+    private decimal customsFee;
+
+    public string DestinationCountry
+    {
+        get { return destinationCountry; }
+        set
+        {
+            if (!string.IsNullOrWhiteSpace(value))
+                destinationCountry = value;
+        }
+    }
+
+    public decimal CustomsFee
+    {
+        get { return customsFee; }
+        set
+        {
+            if (value >= 0)
+                customsFee = value;
+        }
+    }
+
+    public override decimal EstimatedCost
+    {
+        get { return base.EstimatedCost + CustomsFee; }
+    }
+
+    public InternationalShipment(string trackingCode, string description, decimal weight, decimal deliveryFee, DeliveryAddress destination, string destinationCountry, decimal customsFee)
+        : base(trackingCode, description, weight, deliveryFee, destination)
+    {
+        DestinationCountry = destinationCountry;
+        CustomsFee = customsFee;
+    }
+
+    public override void PrintShipment()
+    {
+        base.PrintShipment();
+        Console.WriteLine($"Country       : {DestinationCountry}");
+        Console.WriteLine($"Customs Fee   : {CustomsFee} EGP");
+    }
+}
+#endregion
+
+#endregion
+
 #region DeliveryCenter Struct
 public struct DeliveryCenter
 {
