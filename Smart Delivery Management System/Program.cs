@@ -2,477 +2,437 @@
 
 public class Program
 {
-    #region ReadInput function
-    static void ReadInput(string prompt, out string value)
-    {
-        Console.Write(prompt);
-        value = Console.ReadLine()!;
-    }
-    #endregion
     #region Theoretical Q1
     /*
-     Answer the following questions:
-a) What is the difference between a class and a struct?
+    Q1: Overloading, Overriding, and Binding
 
-Class:
-1. Class is a Reference Type; it stores the reference in the Stack and the actual data in the Heap.
-2. Supports Inheritance.
-3. Good for large and complex data.
-4. When passed, it passes by reference (does not copy all data).
+    a) What is the difference between Method Overloading and Method Overriding?
+    - Method Overloading:
+      Writing multiple methods in the same class with the same name but different signatures (different parameters count, types, or order).
+      It happens at compile time (Static Polymorphism).
 
-Struct:
-1. Struct is a Value Type; it stores the actual value in the Stack.
-2. Does NOT support Inheritance.
-3. Best for small data (usually 16 bytes or less).
-4. When passed, it copies the entire data.
+    - Method Overriding:
+      Redefining a base class method (marked as virtual or abstract) inside a derived class using the override keyword to provide specific behavior.
+      It happens at runtime (Dynamic Polymorphism).
 
-b) Why are classes more suitable than structs for large applications?
-1. Classes support OOP concepts like Inheritance, which makes the code reusable and easy to scale.
-2. Classes pass references instead of copying the whole object, which gives better performance when dealing with large data.
-*/
+    b) What is the difference between Static Binding and Dynamic Binding?
+    - Static Binding (Early Binding):
+      The compiler determines which method to call at compile time based on the reference type (like with overloaded methods or normal non-virtual methods).
+
+    - Dynamic Binding (Late Binding):
+      The CLR decides which method implementation to call at runtime based on the actual object type created in the Heap (like calling overridden virtual methods).
+    */
     #endregion
-    #region Theoretical Q2
-    /*
-    Consider the following code:
-    public class Shipment
-    {
-        public string TrackingCode { get; set; }
-    }
-    public class ExpressShipment : Shipment
-    {
-        public decimal ExtraFee { get; set; }
-    }
-
-    a) Which class is the parent class?
-      :Shipment
-    b) Which class is the child class?
-      :ExpressShipment
-    c) What members are inherited by ExpressShipment?
-      :TrackingCode
-    d) Why is inheritance better than duplicating the same code in multiple classes?
-       1. Code Reusability: Write shared code once instead of repeating it.
-       2. Easy Maintenance: Fix bugs or make updates in one place only.
-     */
-
-
-    #endregion
-
-
 
     public static void Main()
     {
-        #region assignment 01
-        DeliveryCenter center = new DeliveryCenter();
+        // 1. Create Driver and DeliveryCenter
+        Driver driver = new Driver("Ahmed Mohamed");
+        DeliveryCenter center = new DeliveryCenter("Delivery Center");
+        center.CenterDriver = driver;
 
-        // 1. read and add 3 shipments[cite: 1]
-        for (int i = 0; i < 3; i++)
-        {
-            Console.WriteLine($"Enter Shipment{i + 1} Data");
+        // 2. Addresses
+        DeliveryAddress addr1 = new DeliveryAddress("Cairo", "Tahrir St", 10);
+        DeliveryAddress addr2 = new DeliveryAddress("Giza", "Haram St", 25);
+        DeliveryAddress addr3 = new DeliveryAddress("Alexandria", "Corniche St", 5);
 
-            ReadInput("Tracking Code: ", out string code);
-            ReadInput("Description: ", out string desc);
+        // 3. Create Shipments
+        StandardShipment standard = new StandardShipment("SH001", "Laptop", 3m, 80m, addr1);
+        ExpressShipment express = new ExpressShipment("SH002", "Mobile Phone", 2m, 60m, addr2, 30m);
+        InternationalShipment international = new InternationalShipment("SH003", "Television", 8m, 120m, addr3, "Germany", 100m);
 
-            ReadInput("Weight: ", out string weightStr);
-            double.TryParse(weightStr, out double weight);
+        // 4. Add Shipments
+        center.AddShipment(standard);
+        center.AddShipment(express);
+        center.AddShipment(international);
 
-            ReadInput("Delivery Fee: ", out string feeStr);
-            decimal.TryParse(feeStr, out decimal fee);
+        // 5. Print All Shipments using center
+        center.PrintAllShipments();
 
-            ReadInput("City: ", out string city);
-            ReadInput("Street: ", out string street);
-
-            ReadInput("Building Number: ", out string bldStr);
-            int.TryParse(bldStr, out int building);
-
-            DeliveryAddress address = new DeliveryAddress(city, street, building);
-            Shipment shipment = new Shipment(code, desc, weight, fee, address);
-
-            if (center.AddShipment(shipment))
-            {
-                Console.WriteLine("Shipment added successfully.");
-            }
-            else
-            {
-                Console.WriteLine("Delivery Center is full.");
-            }
-
-            Console.WriteLine();
-        }
-
-        // 2. print all shipments using int indexer[cite: 1]
-        Console.WriteLine("--- All Shipments ---");
-        for (int i = 0; i < 3; i++)
-        {
-            center[i].PrintShipment();
-            Console.WriteLine();
-        }
-
-        // 3. search shipment by code using string indexer[cite: 1]
-        Console.Write("Enter a tracking code to search: ");
-        string searchCode = Console.ReadLine();
-
-        Shipment foundShipment = center[searchCode];
-        if (!string.IsNullOrEmpty(foundShipment.TrackingCode))
-        {
-            Console.WriteLine($"Shipment found:{foundShipment.TrackingCode}\t{foundShipment.Description}");
-        }
-        else
-        {
-            Console.WriteLine("Shipment not found.");
-        }
-
+        // 6. Print using DeliveryHelper
+        Console.WriteLine("\n==========================================");
+        Console.WriteLine("Printing Using DeliveryHelper...\n");
+        DeliveryHelper.PrintShipmentDetails(standard);
         Console.WriteLine();
+        DeliveryHelper.PrintShipmentDetails(express);
+        Console.WriteLine();
+        DeliveryHelper.PrintShipmentDetails(international);
 
-        // 4. test struct copy behavior[cite: 1]
-        Console.WriteLine("Struct Copy Test");
-        DeliveryAddress originalAddress = new DeliveryAddress("Cairo", "Tahrir Street", 15);
-        DeliveryAddress copiedAddress = originalAddress;
+        // 7. Update Weight Demonstration
+        Console.WriteLine("\n==========================================");
+        Console.WriteLine("Updating Weight...\n");
+        Console.WriteLine($"Original Weight : {standard.Weight} KG\n");
 
-        copiedAddress.City = "Cairo";
-        copiedAddress.Street = "Makram Ebeid Street";
-        copiedAddress.BuildingNumber = 20;
+        standard.UpdateWeight(5m);
+        Console.WriteLine($"Updated Weight : {standard.Weight} KG\n");
 
-        Console.WriteLine($"Original Address:{originalAddress.GetFullAddress()}");
-        Console.WriteLine($"Copied Address:{copiedAddress.GetFullAddress()}");
-    }
-        #endregion
+        standard.UpdateWeight(5m, 0.5m);
+        Console.WriteLine($"Updated Weight After Packing : {standard.Weight} KG");
 
-}
+        // 8. Print using Shipment[] array
+        Console.WriteLine("\n==========================================");
+        Console.WriteLine("Printing Using Shipment[]...\n");
+        Shipment[] shipmentArray = new Shipment[] { standard, express, international };
 
-#region DeliveryAddress Struct
-public struct DeliveryAddress
-{
-    #region Fields
-    public string City;
-    public string Street;
-    public int BuildingNumber;
-    #endregion
-
-    #region Constructors
-    public DeliveryAddress(string city, string street, int buildingNumber)
-    {
-        City = city;
-        Street = street;
-        BuildingNumber = buildingNumber;
-    }
-    #endregion
-
-    #region Methods
-    public string GetFullAddress()
-    {
-        return $"{BuildingNumber} {Street}, {City}";
-    }
-    #endregion
-}
-#endregion
-
-#region Shipment Class
-public class Shipment
-{
-    #region Private Fields
-    private string trackingCode;
-    private string description;
-    private decimal weight;
-    private decimal deliveryFee;
-    #endregion
-
-    #region Properties
-    public string TrackingCode
-    {
-        get { return trackingCode; }
-    }
-
-    public string Description
-    {
-        get { return description; }
-        set
+        for (int i = 0; i < shipmentArray.Length; i++)
         {
-            if (!string.IsNullOrWhiteSpace(value))
-                description = value;
+            if (shipmentArray[i] is StandardShipment)
+                Console.WriteLine("Standard Shipment...\n");
+            else if (shipmentArray[i] is ExpressShipment)
+                Console.WriteLine("Express Shipment...\n");
+            else if (shipmentArray[i] is InternationalShipment)
+                Console.WriteLine("International Shipment...\n");
+        }
+        Console.WriteLine("==========================================");
+    }
+
+    #region DeliveryAddress Struct
+    public struct DeliveryAddress
+    {
+        public string City;
+        public string Street;
+        public int BuildingNumber;
+
+        public DeliveryAddress(string city, string street, int buildingNumber)
+        {
+            City = city;
+            Street = street;
+            BuildingNumber = buildingNumber;
+        }
+
+        public string GetFullAddress()
+        {
+            return $"{BuildingNumber} {Street}, {City}";
         }
     }
+    #endregion
 
-    public decimal Weight
+    #region Driver Class
+    public class Driver
     {
-        get { return weight; }
-        set
+        public string Name { get; set; }
+
+        public Driver(string name)
         {
-            if (value > 0)
-                weight = value;
+            Name = name;
         }
-    }
-
-    public decimal DeliveryFee
-    {
-        get { return deliveryFee; }
-        private set
-        {
-            if (value > 0)
-                deliveryFee = value;
-        }
-    }
-
-    public DeliveryAddress Destination { get; set; }
-
-    // virtual to allow child classes to override calculation
-    public virtual decimal EstimatedCost
-    {
-        get { return DeliveryFee + (Weight * 5); }
     }
     #endregion
 
-    #region Constructors
-    public Shipment(string trackingCode)
+    #region Shipment Base Class
+    public class Shipment
     {
-        this.trackingCode = string.IsNullOrWhiteSpace(trackingCode) ? "UNKNOWN" : trackingCode;
-        this.description = "Unknown";
-        this.weight = 1;
-        this.deliveryFee = 50;
-        this.Destination = default;
-    }
+        private string trackingCode;
+        private string description;
+        private decimal weight;
+        private decimal deliveryFee;
 
-    public Shipment(string trackingCode, string description, decimal weight, decimal deliveryFee, DeliveryAddress destination)
-    {
-        this.trackingCode = string.IsNullOrWhiteSpace(trackingCode) ? "UNKNOWN" : trackingCode;
-        this.description = !string.IsNullOrWhiteSpace(description) ? description : "Unknown";
-        this.weight = weight > 0 ? weight : 1;
-        this.deliveryFee = deliveryFee > 0 ? deliveryFee : 50;
-        this.Destination = destination;
-    }
-    #endregion
-
-    #region Methods
-    public void UpdateDeliveryFee(decimal newFee)
-    {
-        if (newFee > 0)
-            deliveryFee = newFee;
-    }
-
-    public virtual void PrintShipment()
-    {
-        Console.WriteLine($"Tracking Code : {TrackingCode}");
-        Console.WriteLine($"Description   : {Description}");
-        Console.WriteLine($"Weight        : {Weight} KG");
-        Console.WriteLine($"Delivery Fee  : {DeliveryFee} EGP");
-        Console.WriteLine($"Estimated Cost: {EstimatedCost} EGP");
-    }
-    #endregion
-}
-#endregion
-
-#region Shipment Types (Inheritance)
-
-#region StandardShipment Class
-public class StandardShipment : Shipment
-{
-    public StandardShipment(string trackingCode, string description, decimal weight, decimal deliveryFee, DeliveryAddress destination)
-        : base(trackingCode, description, weight, deliveryFee, destination)
-    {
-    }
-}
-#endregion
-
-#region ExpressShipment Class
-public class ExpressShipment : Shipment
-{
-    private decimal extraFee;
-
-    public decimal ExtraFee
-    {
-        get { return extraFee; }
-        set
+        public string TrackingCode
         {
-            if (value >= 0)
-                extraFee = value;
+            get { return trackingCode; }
         }
-    }
 
-    public override decimal EstimatedCost
-    {
-        get { return base.EstimatedCost + ExtraFee; }
-    }
-
-    public ExpressShipment(string trackingCode, string description, decimal weight, decimal deliveryFee, DeliveryAddress destination, decimal extraFee)
-        : base(trackingCode, description, weight, deliveryFee, destination)
-    {
-        ExtraFee = extraFee;
-    }
-
-    public override void PrintShipment()
-    {
-        base.PrintShipment();
-        Console.WriteLine($"Extra Fee     : {ExtraFee} EGP");
-    }
-}
-#endregion
-
-#region InternationalShipment Class
-public class InternationalShipment : Shipment
-{
-    private string destinationCountry;
-    private decimal customsFee;
-
-    public string DestinationCountry
-    {
-        get { return destinationCountry; }
-        set
+        public string Description
         {
-            if (!string.IsNullOrWhiteSpace(value))
-                destinationCountry = value;
-        }
-    }
-
-    public decimal CustomsFee
-    {
-        get { return customsFee; }
-        set
-        {
-            if (value >= 0)
-                customsFee = value;
-        }
-    }
-
-    public override decimal EstimatedCost
-    {
-        get { return base.EstimatedCost + CustomsFee; }
-    }
-
-    public InternationalShipment(string trackingCode, string description, decimal weight, decimal deliveryFee, DeliveryAddress destination, string destinationCountry, decimal customsFee)
-        : base(trackingCode, description, weight, deliveryFee, destination)
-    {
-        DestinationCountry = destinationCountry;
-        CustomsFee = customsFee;
-    }
-
-    public override void PrintShipment()
-    {
-        base.PrintShipment();
-        Console.WriteLine($"Country       : {DestinationCountry}");
-        Console.WriteLine($"Customs Fee   : {CustomsFee} EGP");
-    }
-}
-#endregion
-
-#endregion
-
-#region DeliveryCenter Class
-public class DeliveryCenter
-{
-    #region Properties & Fields
-    public string CenterName { get; set; }
-    private Shipment[] shipments;
-    private int count;
-    #endregion
-
-    #region Constructors
-    public DeliveryCenter(string centerName = "Main Center")
-    {
-        CenterName = centerName;
-        shipments = new Shipment[20];
-        count = 0;
-    }
-    #endregion
-
-    #region Indexers
-    // int indexer: access by position
-    public Shipment this[int index]
-    {
-        get
-        {
-            if (shipments != null && index >= 0 && index < count)
-                return shipments[index];
-
-            return null;
-        }
-        set
-        {
-            if (shipments != null && index >= 0 && index < count)
-                shipments[index] = value;
-        }
-    }
-
-    // string indexer: find by tracking code
-    public Shipment this[string searchCode]
-    {
-        get
-        {
-            if (shipments != null && !string.IsNullOrWhiteSpace(searchCode))
+            get { return description; }
+            set
             {
-                for (int i = 0; i < count; i++)
+                if (!string.IsNullOrWhiteSpace(value))
+                    description = value;
+            }
+        }
+
+        public decimal Weight
+        {
+            get { return weight; }
+            set
+            {
+                if (value > 0)
+                    weight = value;
+            }
+        }
+
+        public decimal DeliveryFee
+        {
+            get { return deliveryFee; }
+            private set
+            {
+                if (value > 0)
+                    deliveryFee = value;
+            }
+        }
+
+        public DeliveryAddress Destination { get; set; }
+
+        public virtual decimal EstimatedCost
+        {
+            get { return DeliveryFee + (Weight * 5); }
+        }
+
+        public Shipment(string trackingCode, string description, decimal weight, decimal deliveryFee, DeliveryAddress destination)
+        {
+            this.trackingCode = string.IsNullOrWhiteSpace(trackingCode) ? "UNKNOWN" : trackingCode;
+            this.description = !string.IsNullOrWhiteSpace(description) ? description : "Unknown";
+            this.weight = weight > 0 ? weight : 1;
+            this.deliveryFee = deliveryFee > 0 ? deliveryFee : 50;
+            this.Destination = destination;
+        }
+
+        // Method Overloading: Version 1
+        public void UpdateWeight(decimal newWeight)
+        {
+            if (newWeight > 0)
+                Weight = newWeight;
+        }
+
+        // Method Overloading: Version 2
+        public void UpdateWeight(decimal baseWeight, decimal extraPackingWeight)
+        {
+            if (baseWeight > 0 && extraPackingWeight >= 0)
+                Weight = baseWeight + extraPackingWeight;
+        }
+
+        public virtual void PrintShipment()
+        {
+            Console.WriteLine($"Tracking Code : {TrackingCode}");
+            Console.WriteLine($"Description   : {Description}");
+            Console.WriteLine($"Weight        : {Weight} KG");
+            Console.WriteLine($"Delivery Fee  : {DeliveryFee} EGP");
+            Console.WriteLine($"Estimated Cost: {EstimatedCost} EGP");
+        }
+    }
+    #endregion
+
+    #region Derived Shipment Classes
+
+    public class StandardShipment : Shipment
+    {
+        public StandardShipment(string trackingCode, string description, decimal weight, decimal deliveryFee, DeliveryAddress destination)
+            : base(trackingCode, description, weight, deliveryFee, destination)
+        {
+        }
+
+        public override void PrintShipment()
+        {
+            Console.WriteLine("Standard Shipment\n");
+            base.PrintShipment();
+        }
+    }
+
+    public class ExpressShipment : Shipment
+    {
+        private decimal extraFee;
+
+        public decimal ExtraFee
+        {
+            get { return extraFee; }
+            set
+            {
+                if (value >= 0)
+                    extraFee = value;
+            }
+        }
+
+        public override decimal EstimatedCost
+        {
+            get { return DeliveryFee + (Weight * 5) + ExtraFee; }
+        }
+
+        public ExpressShipment(string trackingCode, string description, decimal weight, decimal deliveryFee, DeliveryAddress destination, decimal extraFee)
+            : base(trackingCode, description, weight, deliveryFee, destination)
+        {
+            ExtraFee = extraFee;
+        }
+
+        public override void PrintShipment()
+        {
+            Console.WriteLine("Express Shipment\n");
+            Console.WriteLine($"Tracking Code : {TrackingCode}");
+            Console.WriteLine($"Description   : {Description}");
+            Console.WriteLine($"Weight        : {Weight} KG");
+            Console.WriteLine($"Delivery Fee  : {DeliveryFee} EGP");
+            Console.WriteLine($"Extra Fee     : {ExtraFee} EGP");
+            Console.WriteLine($"Estimated Cost: {EstimatedCost} EGP");
+        }
+    }
+
+    public class InternationalShipment : Shipment
+    {
+        private string destinationCountry;
+        private decimal customsFee;
+
+        public string DestinationCountry
+        {
+            get { return destinationCountry; }
+            set
+            {
+                if (!string.IsNullOrWhiteSpace(value))
+                    destinationCountry = value;
+            }
+        }
+
+        public decimal CustomsFee
+        {
+            get { return customsFee; }
+            set
+            {
+                if (value >= 0)
+                    customsFee = value;
+            }
+        }
+
+        public override decimal EstimatedCost
+        {
+            get { return DeliveryFee + (Weight * 5) + CustomsFee; }
+        }
+
+        public InternationalShipment(string trackingCode, string description, decimal weight, decimal deliveryFee, DeliveryAddress destination, string destinationCountry, decimal customsFee)
+            : base(trackingCode, description, weight, deliveryFee, destination)
+        {
+            DestinationCountry = destinationCountry;
+            CustomsFee = customsFee;
+        }
+
+        public override void PrintShipment()
+        {
+            Console.WriteLine("International Shipment\n");
+            Console.WriteLine($"Tracking Code        : {TrackingCode}");
+            Console.WriteLine($"Description           : {Description}");
+            Console.WriteLine($"Weight                : {Weight} KG");
+            Console.WriteLine($"Delivery Fee          : {DeliveryFee} EGP");
+            Console.WriteLine($"Destination Country   : {DestinationCountry}");
+            Console.WriteLine($"Customs Fee           : {CustomsFee} EGP");
+            Console.WriteLine($"Estimated Cost        : {EstimatedCost} EGP");
+        }
+    }
+
+    #endregion
+
+    #region DeliveryCenter Class
+    public class DeliveryCenter
+    {
+        public string CenterName { get; set; }
+        public Driver CenterDriver { get; set; }
+        private Shipment[] shipments;
+        private int count;
+
+        public DeliveryCenter(string centerName = "Main Center")
+        {
+            CenterName = centerName;
+            shipments = new Shipment[20];
+            count = 0;
+        }
+
+        public Shipment this[int index]
+        {
+            get
+            {
+                if (shipments != null && index >= 0 && index < count)
+                    return shipments[index];
+                return null;
+            }
+            set
+            {
+                if (shipments != null && index >= 0 && index < count)
+                    shipments[index] = value;
+            }
+        }
+
+        public Shipment this[string searchCode]
+        {
+            get
+            {
+                if (shipments != null && !string.IsNullOrWhiteSpace(searchCode))
                 {
-                    if (shipments[i].TrackingCode == searchCode)
-                        return shipments[i];
+                    for (int i = 0; i < count; i++)
+                    {
+                        if (shipments[i].TrackingCode == searchCode)
+                            return shipments[i];
+                    }
+                }
+                return null;
+            }
+        }
+
+        public bool AddShipment(Shipment shipment)
+        {
+            if (shipment == null)
+                return false;
+
+            if (count < shipments.Length)
+            {
+                shipments[count] = shipment;
+                count++;
+                return true;
+            }
+
+            return false;
+        }
+
+        public bool RemoveShipment(string trackingCode)
+        {
+            if (string.IsNullOrWhiteSpace(trackingCode) || count == 0)
+                return false;
+
+            int foundIndex = -1;
+            for (int i = 0; i < count; i++)
+            {
+                if (shipments[i].TrackingCode == trackingCode)
+                {
+                    foundIndex = i;
+                    break;
                 }
             }
-            return null;
-        }
-    }
-    #endregion
 
-    #region Methods
-    public bool AddShipment(Shipment shipment)
-    {
-        if (shipment == null)
-            return false;
+            if (foundIndex == -1)
+                return false;
 
-        if (count < shipments.Length)
-        {
-            shipments[count] = shipment;
-            count++;
+            for (int i = foundIndex; i < count - 1; i++)
+            {
+                shipments[i] = shipments[i + 1];
+            }
+
+            shipments[count - 1] = null;
+            count--;
             return true;
         }
 
-        return false;
-    }
-
-    public bool RemoveShipment(string trackingCode)
-    {
-        if (string.IsNullOrWhiteSpace(trackingCode) || count == 0)
-            return false;
-
-        int foundIndex = -1;
-        for (int i = 0; i < count; i++)
+        public void PrintAllShipments()
         {
-            if (shipments[i].TrackingCode == trackingCode)
+            Console.WriteLine("==========================================");
+            Console.WriteLine(CenterName);
+            Console.WriteLine("==========================================\n");
+
+            if (CenterDriver != null)
             {
-                foundIndex = i;
-                break;
+                Console.WriteLine($"Driver : {CenterDriver.Name}\n");
+            }
+
+            for (int i = 0; i < count; i++)
+            {
+                Console.WriteLine("------------------------------------------\n");
+                shipments[i].PrintShipment();
+                Console.WriteLine();
             }
         }
-
-        if (foundIndex == -1)
-            return false;
-
-        // Shift elements to the left to remove item
-        for (int i = foundIndex; i < count - 1; i++)
-        {
-            shipments[i] = shipments[i + 1];
-        }
-
-        shipments[count - 1] = null;
-        count--;
-        return true;
     }
+    #endregion
 
-    public void PrintAllShipments()
+    #region DeliveryHelper Static Class
+    public static class DeliveryHelper
     {
-        Console.WriteLine("==================================================");
-        Console.WriteLine($"Delivery Center : {CenterName}");
-        Console.WriteLine("==================================================");
-
-        for (int i = 0; i < count; i++)
+        public static void PrintShipmentDetails(Shipment shipment)
         {
-            if (shipments[i] is StandardShipment)
-                Console.WriteLine("Standard Shipment\n");
-            else if (shipments[i] is ExpressShipment)
-                Console.WriteLine("Express Shipment\n");
-            else if (shipments[i] is InternationalShipment)
-                Console.WriteLine("International Shipment\n");
-
-            shipments[i].PrintShipment();
-            Console.WriteLine("--------------------------------------------------");
+            if (shipment != null)
+            {
+                if (shipment is StandardShipment)
+                    Console.WriteLine("Standard Shipment Printed Successfully.");
+                else if (shipment is ExpressShipment)
+                    Console.WriteLine("Express Shipment Printed Successfully.");
+                else if (shipment is InternationalShipment)
+                    Console.WriteLine("International Shipment Printed Successfully.");
+            }
         }
     }
     #endregion
 }
-#endregion
