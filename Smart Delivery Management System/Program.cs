@@ -3,25 +3,7 @@
 public class Program
 {
     #region Theoretical Q1
-    /*
-    Q1: Overloading, Overriding, and Binding
 
-    a) What is the difference between Method Overloading and Method Overriding?
-    - Method Overloading:
-      Writing multiple methods in the same class with the same name but different signatures (different parameters count, types, or order).
-      It happens at compile time (Static Polymorphism).
-
-    - Method Overriding:
-      Redefining a base class method (marked as virtual or abstract) inside a derived class using the override keyword to provide specific behavior.
-      It happens at runtime (Dynamic Polymorphism).
-
-    b) What is the difference between Static Binding and Dynamic Binding?
-    - Static Binding (Early Binding):
-      The compiler determines which method to call at compile time based on the reference type (like with overloaded methods or normal non-virtual methods).
-
-    - Dynamic Binding (Late Binding):
-      The CLR decides which method implementation to call at runtime based on the actual object type created in the Heap (like calling overridden virtual methods).
-    */
     #endregion
 
     public static void Main()
