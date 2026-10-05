@@ -1,72 +1,33 @@
 ﻿using System;
-using System.Diagnostics.Contracts;
 
 public class Program
 {
-    #region Part 01 - Theoretical Questions
-    #region Theoretical Q1
-
-    /*
-    Q1: Abstraction
-    a) What is Abstraction in Object-Oriented Programming?
-    - Answer:
-    Abstraction means hiding the complex internal details and showing only the essential features to the user. It focuses on what an object does rather than how it does it.
-
-    b) Why is abstraction considered one of the four pillars of OOP?
-    - Answer:
-    Because it reduces code complexity and keeps different parts of the program independent (loose coupling). It allows you to change internal implementation details without breaking the code that depends on it.
-
-    */
-
-    #endregion
-    #region Theoretical Q2
-    /*
-    Q2: Abstract Classes vs.Interfaces
-    a) What is the difference between an Abstract Class and an Interface?
-    1. Abstract Class:
-       - Represents an "is-a" relationship(shared identity).
-       - Can have fields, constructors, and fully implemented(concrete) methods alongside abstract methods.
-    2. Interface:
-       - Represents a "can-do" contract(shared behavior).
-       - Defines a contract that classes must follow.
-       - Cannot contain instance fields to store state or standard instance constructors.
-
-    b) When would you choose an Interface instead of an Abstract Class?
-    - Choose an interface when you want to define a common capability across unrelated classes(like `IDisposable` or `IComparable`), or when you need a class to implement multiple roles to get around the single-inheritance limit.
-
-    c) Can a class inherit from multiple abstract classes? Can it implement multiple interfaces?
-    - No, C# does not support multiple class inheritance, so a class can only inherit from one abstract class.
-    - Yes, a class can implement multiple interfaces.
-    */
-
-    #endregion
-
     public static void Main()
     {
-        // 1. Create Driver and DeliveryCenter
+        // 1. Create driver and delivery center
         Driver driver = new Driver("Ahmed Mohamed");
-        DeliveryCenter center = new DeliveryCenter("Delivery Center");
+        DeliveryCenter center = new DeliveryCenter("Main Logistics Hub");
         center.CenterDriver = driver;
 
-        // 2. Addresses
+        // 2. Create addresses
         DeliveryAddress addr1 = new DeliveryAddress("Cairo", "Tahrir St", 10);
         DeliveryAddress addr2 = new DeliveryAddress("Giza", "Haram St", 25);
         DeliveryAddress addr3 = new DeliveryAddress("Alexandria", "Corniche St", 5);
 
-        // 3. Create Shipments
+        // 3. Create shipments
         StandardShipment standard = new StandardShipment("SH001", "Laptop", 3m, 80m, addr1);
         ExpressShipment express = new ExpressShipment("SH002", "Mobile Phone", 2m, 60m, addr2, 30m);
         InternationalShipment international = new InternationalShipment("SH003", "Television", 8m, 120m, addr3, "Germany", 100m);
 
-        // 4. Add Shipments
+        // 4. Add shipments to center
         center.AddShipment(standard);
         center.AddShipment(express);
         center.AddShipment(international);
 
-        // 5. Print All Shipments using center
+        // 5. Print all shipments from center
         center.PrintAllShipments();
 
-        // 6. Print using DeliveryHelper
+        // 6. Test DeliveryHelper
         Console.WriteLine("\n==========================================");
         Console.WriteLine("Printing Using DeliveryHelper...\n");
         DeliveryHelper.PrintShipmentDetails(standard);
@@ -75,7 +36,7 @@ public class Program
         Console.WriteLine();
         DeliveryHelper.PrintShipmentDetails(international);
 
-        // 7. Update Weight Demonstration
+        // 7. Test weight updates
         Console.WriteLine("\n==========================================");
         Console.WriteLine("Updating Weight...\n");
         Console.WriteLine($"Original Weight : {standard.Weight} KG\n");
@@ -86,21 +47,16 @@ public class Program
         standard.UpdateWeight(5m, 0.5m);
         Console.WriteLine($"Updated Weight After Packing : {standard.Weight} KG");
 
-        // 8. Print using Shipment[] array
+        // 8. Loop through array using polymorphism
         Console.WriteLine("\n==========================================");
-        Console.WriteLine("Printing Using Shipment[]...\n");
+        Console.WriteLine("Printing Using Shipment[] Array...\n");
         Shipment[] shipmentArray = new Shipment[] { standard, express, international };
 
         for (int i = 0; i < shipmentArray.Length; i++)
         {
-            if (shipmentArray[i] is StandardShipment)
-                Console.WriteLine("Standard Shipment...\n");
-            else if (shipmentArray[i] is ExpressShipment)
-                Console.WriteLine("Express Shipment...\n");
-            else if (shipmentArray[i] is InternationalShipment)
-                Console.WriteLine("International Shipment...\n");
+            shipmentArray[i].PrintShipment();
+            Console.WriteLine("------------------------------------------");
         }
-        Console.WriteLine("==========================================");
     }
 
     #region DeliveryAddress Struct
@@ -137,21 +93,18 @@ public class Program
     #endregion
 
     #region Shipment Base Class
-    public class Shipment
+    public abstract class Shipment
     {
         private string trackingCode;
         private string description;
         private decimal weight;
         private decimal deliveryFee;
 
-        public string TrackingCode
-        {
-            get { return trackingCode; }
-        }
+        public string TrackingCode => trackingCode;
 
         public string Description
         {
-            get { return description; }
+            get => description;
             set
             {
                 if (!string.IsNullOrWhiteSpace(value))
@@ -161,7 +114,7 @@ public class Program
 
         public decimal Weight
         {
-            get { return weight; }
+            get => weight;
             set
             {
                 if (value > 0)
@@ -171,7 +124,7 @@ public class Program
 
         public decimal DeliveryFee
         {
-            get { return deliveryFee; }
+            get => deliveryFee;
             private set
             {
                 if (value > 0)
@@ -181,10 +134,8 @@ public class Program
 
         public DeliveryAddress Destination { get; set; }
 
-        public virtual decimal EstimatedCost
-        {
-            get { return DeliveryFee + (Weight * 5); }
-        }
+        // Each child class calculates its own cost
+        public abstract decimal EstimatedCost { get; }
 
         public Shipment(string trackingCode, string description, decimal weight, decimal deliveryFee, DeliveryAddress destination)
         {
@@ -195,24 +146,26 @@ public class Program
             this.Destination = destination;
         }
 
-        // Method Overloading: Version 1
+        // Overload 1: simple weight update
         public void UpdateWeight(decimal newWeight)
         {
             if (newWeight > 0)
                 Weight = newWeight;
         }
 
-        // Method Overloading: Version 2
+        // Overload 2: update with extra packing
         public void UpdateWeight(decimal baseWeight, decimal extraPackingWeight)
         {
             if (baseWeight > 0 && extraPackingWeight >= 0)
                 Weight = baseWeight + extraPackingWeight;
         }
 
+        // Print common shipment data
         public virtual void PrintShipment()
         {
             Console.WriteLine($"Tracking Code : {TrackingCode}");
             Console.WriteLine($"Description   : {Description}");
+            Console.WriteLine($"Destination   : {Destination.GetFullAddress()}");
             Console.WriteLine($"Weight        : {Weight} KG");
             Console.WriteLine($"Delivery Fee  : {DeliveryFee} EGP");
             Console.WriteLine($"Estimated Cost: {EstimatedCost} EGP");
@@ -224,6 +177,8 @@ public class Program
 
     public class StandardShipment : Shipment
     {
+        public override decimal EstimatedCost => DeliveryFee + (Weight * 5);
+
         public StandardShipment(string trackingCode, string description, decimal weight, decimal deliveryFee, DeliveryAddress destination)
             : base(trackingCode, description, weight, deliveryFee, destination)
         {
@@ -231,7 +186,7 @@ public class Program
 
         public override void PrintShipment()
         {
-            Console.WriteLine("Standard Shipment\n");
+            Console.WriteLine("Standard Shipment:");
             base.PrintShipment();
         }
     }
@@ -242,7 +197,7 @@ public class Program
 
         public decimal ExtraFee
         {
-            get { return extraFee; }
+            get => extraFee;
             set
             {
                 if (value >= 0)
@@ -250,10 +205,7 @@ public class Program
             }
         }
 
-        public override decimal EstimatedCost
-        {
-            get { return DeliveryFee + (Weight * 5) + ExtraFee; }
-        }
+        public override decimal EstimatedCost => DeliveryFee + (Weight * 5) + ExtraFee;
 
         public ExpressShipment(string trackingCode, string description, decimal weight, decimal deliveryFee, DeliveryAddress destination, decimal extraFee)
             : base(trackingCode, description, weight, deliveryFee, destination)
@@ -263,13 +215,9 @@ public class Program
 
         public override void PrintShipment()
         {
-            Console.WriteLine("Express Shipment\n");
-            Console.WriteLine($"Tracking Code : {TrackingCode}");
-            Console.WriteLine($"Description   : {Description}");
-            Console.WriteLine($"Weight        : {Weight} KG");
-            Console.WriteLine($"Delivery Fee  : {DeliveryFee} EGP");
+            Console.WriteLine("Express Shipment:");
+            base.PrintShipment();
             Console.WriteLine($"Extra Fee     : {ExtraFee} EGP");
-            Console.WriteLine($"Estimated Cost: {EstimatedCost} EGP");
         }
     }
 
@@ -280,7 +228,7 @@ public class Program
 
         public string DestinationCountry
         {
-            get { return destinationCountry; }
+            get => destinationCountry;
             set
             {
                 if (!string.IsNullOrWhiteSpace(value))
@@ -290,7 +238,7 @@ public class Program
 
         public decimal CustomsFee
         {
-            get { return customsFee; }
+            get => customsFee;
             set
             {
                 if (value >= 0)
@@ -298,10 +246,7 @@ public class Program
             }
         }
 
-        public override decimal EstimatedCost
-        {
-            get { return DeliveryFee + (Weight * 5) + CustomsFee; }
-        }
+        public override decimal EstimatedCost => DeliveryFee + (Weight * 5) + CustomsFee;
 
         public InternationalShipment(string trackingCode, string description, decimal weight, decimal deliveryFee, DeliveryAddress destination, string destinationCountry, decimal customsFee)
             : base(trackingCode, description, weight, deliveryFee, destination)
@@ -312,14 +257,10 @@ public class Program
 
         public override void PrintShipment()
         {
-            Console.WriteLine("International Shipment\n");
-            Console.WriteLine($"Tracking Code        : {TrackingCode}");
-            Console.WriteLine($"Description           : {Description}");
-            Console.WriteLine($"Weight                : {Weight} KG");
-            Console.WriteLine($"Delivery Fee          : {DeliveryFee} EGP");
-            Console.WriteLine($"Destination Country   : {DestinationCountry}");
-            Console.WriteLine($"Customs Fee           : {CustomsFee} EGP");
-            Console.WriteLine($"Estimated Cost        : {EstimatedCost} EGP");
+            Console.WriteLine("International Shipment:");
+            base.PrintShipment();
+            Console.WriteLine($"Country       : {DestinationCountry}");
+            Console.WriteLine($"Customs Fee   : {CustomsFee} EGP");
         }
     }
 
@@ -340,6 +281,7 @@ public class Program
             count = 0;
         }
 
+        // Indexer by index position
         public Shipment this[int index]
         {
             get
@@ -350,11 +292,13 @@ public class Program
             }
             set
             {
-                if (shipments != null && index >= 0 && index < count)
+                // Do not allow null values to replace items
+                if (shipments != null && index >= 0 && index < count && value != null)
                     shipments[index] = value;
             }
         }
 
+        // Indexer by tracking code
         public Shipment this[string searchCode]
         {
             get
@@ -404,6 +348,7 @@ public class Program
             if (foundIndex == -1)
                 return false;
 
+            // Shift items left
             for (int i = foundIndex; i < count - 1; i++)
             {
                 shipments[i] = shipments[i + 1];
@@ -427,7 +372,7 @@ public class Program
 
             for (int i = 0; i < count; i++)
             {
-                Console.WriteLine("------------------------------------------\n");
+                Console.WriteLine("------------------------------------------");
                 shipments[i].PrintShipment();
                 Console.WriteLine();
             }
@@ -438,16 +383,12 @@ public class Program
     #region DeliveryHelper Static Class
     public static class DeliveryHelper
     {
+        // Call PrintShipment directly using polymorphism
         public static void PrintShipmentDetails(Shipment shipment)
         {
             if (shipment != null)
             {
-                if (shipment is StandardShipment)
-                    Console.WriteLine("Standard Shipment Printed Successfully.");
-                else if (shipment is ExpressShipment)
-                    Console.WriteLine("Express Shipment Printed Successfully.");
-                else if (shipment is InternationalShipment)
-                    Console.WriteLine("International Shipment Printed Successfully.");
+                shipment.PrintShipment();
             }
         }
     }
