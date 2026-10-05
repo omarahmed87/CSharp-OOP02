@@ -19,6 +19,27 @@ public class Program
     */
 
     #endregion
+    #region Theoretical Q2
+    /*
+    Q2: Abstract Classes vs.Interfaces
+    a) What is the difference between an Abstract Class and an Interface?
+    1. Abstract Class:
+       - Represents an "is-a" relationship(shared identity).
+       - Can have fields, constructors, and fully implemented(concrete) methods alongside abstract methods.
+    2. Interface:
+       - Represents a "can-do" contract(shared behavior).
+       - Defines a contract that classes must follow.
+       - Cannot contain instance fields to store state or standard instance constructors.
+
+    b) When would you choose an Interface instead of an Abstract Class?
+    - Choose an interface when you want to define a common capability across unrelated classes(like `IDisposable` or `IComparable`), or when you need a class to implement multiple roles to get around the single-inheritance limit.
+
+    c) Can a class inherit from multiple abstract classes? Can it implement multiple interfaces?
+    - No, C# does not support multiple class inheritance, so a class can only inherit from one abstract class.
+    - Yes, a class can implement multiple interfaces.
+    */
+
+    #endregion
 
     public static void Main()
     {
