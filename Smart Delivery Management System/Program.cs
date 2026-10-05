@@ -1,8 +1,22 @@
 ﻿using System;
+using System.Diagnostics.Contracts;
 
 public class Program
 {
+    #region Part 01 - Theoretical Questions
     #region Theoretical Q1
+
+    /*
+    Q1: Abstraction
+    a) What is Abstraction in Object-Oriented Programming?
+    - Answer:
+    Abstraction means hiding the complex internal details and showing only the essential features to the user. It focuses on what an object does rather than how it does it.
+
+    b) Why is abstraction considered one of the four pillars of OOP?
+    - Answer:
+    Because it reduces code complexity and keeps different parts of the program independent (loose coupling). It allows you to change internal implementation details without breaking the code that depends on it.
+
+    */
 
     #endregion
 
