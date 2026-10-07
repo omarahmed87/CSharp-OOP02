@@ -2,7 +2,7 @@
 
 public abstract partial class Shipment
 {
-    // Tracking Status property
+    // Tracking status property
     public string TrackingStatus { get; set; } = "In Transit";
 
     // Returns current tracking status

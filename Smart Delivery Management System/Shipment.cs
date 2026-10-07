@@ -1,21 +1,22 @@
 ﻿using System;
 using static Program;
 
-public abstract partial class Shipment
+// Implements ICloneable interface
+public abstract partial class Shipment : ICloneable
 {
-    // Static field to track total shipments created
+    // Static counter shared across all shipments
     private static int totalShipmentsCreated;
 
     public static int TotalShipmentsCreated => totalShipmentsCreated;
 
-    // Static constructor
+    // Static constructor runs automatically before first use
     static Shipment()
     {
         totalShipmentsCreated = 0;
         Console.WriteLine("Shipment System Initialized");
     }
 
-    // Static method
+    // Static method to get total shipments created
     public static int GetTotalShipmentsCreated()
     {
         return totalShipmentsCreated;
@@ -63,7 +64,7 @@ public abstract partial class Shipment
 
     public abstract decimal EstimatedCost { get; }
 
-    // Constructor increments the static counter
+    // Base constructor increments the shared counter
     public Shipment(string trackingCode, string description, decimal weight, decimal deliveryFee, DeliveryAddress destination)
     {
         this.trackingCode = string.IsNullOrWhiteSpace(trackingCode) ? "UNKNOWN" : trackingCode;
@@ -75,10 +76,10 @@ public abstract partial class Shipment
         totalShipmentsCreated++;
     }
 
-    // Q1: Method to return a copy
+    // Q1: Method to copy current shipment
     public virtual Shipment CopyShipment()
     {
-        return ShallowCopy();
+        return (Shipment)this.Clone();
     }
 
     // Q2: Shallow Copy using MemberwiseClone
@@ -87,7 +88,13 @@ public abstract partial class Shipment
         return (Shipment)this.MemberwiseClone();
     }
 
-    // Q3: Deep Copy method (abstract so each derived class instantiates its concrete type)
+    // ICloneable Implementation
+    public object Clone()
+    {
+        return this.MemberwiseClone();
+    }
+
+    // Q3: Deep Copy method overridden in child classes
     public abstract Shipment DeepCopy();
 
     public void UpdateWeight(decimal newWeight)
