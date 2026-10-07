@@ -131,12 +131,13 @@ public class Program
         }
     }
 
-    #region DeliveryAddress Struct
-    public struct DeliveryAddress
+    #region DeliveryAddress Class
+    // Converted to class so it is a Reference Type on the Heap
+    public class DeliveryAddress
     {
-        public string City;
-        public string Street;
-        public int BuildingNumber;
+        public string City { get; set; }
+        public string Street { get; set; }
+        public int BuildingNumber { get; set; }
 
         public DeliveryAddress(string city, string street, int buildingNumber)
         {
